@@ -1,5 +1,6 @@
 <?php
-// POST METHOD.... htmlspecialchars is a security measure... example: echo htmlspecialchars($_POST['email']);
+// POST METHOD.... 
+// htmlspecialchars is a security measure when not validating... example: echo htmlspecialchars($_POST['email']);
 if ( isset($_POST['submit']) ) {
 
     // Check email
@@ -28,7 +29,7 @@ if ( isset($_POST['submit']) ) {
     } else {
         $image = $_POST['image'];
         if(!filter_var($image, FILTER_VALIDATE_URL)){
-            echo 'Must enter a valid URL.'
+            echo 'Must enter a valid URL.';
         }
     }
 
