@@ -56,6 +56,14 @@ if(isset($_POST['submit'])) {
     		$errors['languages'] = 'Languages must be a comma separated list';
 		}
     }
+
+    // If no error, form is valid. Redirect to homepage.
+    if(array_filter($errors)){
+        echo 'There are errors in the form.';
+    } else {
+        header('Location: index.php');
+    }
+
 } // end of POST check
 
 
