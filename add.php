@@ -1,12 +1,59 @@
 <?php
-
+// POST METHOD.... htmlspecialchars is a security measure... example: echo htmlspecialchars($_POST['email']);
 if ( isset($_POST['submit']) ) {
-    echo htmlspecialchars($_POST['email']);
-    echo htmlspecialchars($_POST['title']);
-    echo htmlspecialchars($_POST['image']);
-    echo htmlspecialchars($_POST['description']);
-    echo htmlspecialchars($_POST['languages']);
-}
+
+    // Check email
+    if(empty($_POST['email'])) {
+        echo "An email is required <br />";
+    } else {
+        $email = $_POST['email'];
+        if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
+            echo 'Must enter a valid email address.';
+        }
+    }
+
+    // Check title
+    if(empty($_POST['title'])) {
+        echo "A title is required <br />";
+    } else {
+        $title = $_POST['title'];
+		if(!preg_match('/^[a-zA-Z\s]+$/', $title)){
+			echo 'Title must be letters and spaces only.';
+		}
+    }
+
+    // Check image url
+    if(empty($_POST['image'])) {
+        echo "An image url is required <br />";
+    } else {
+        $image = $_POST['image'];
+        if(!filter_var($image, FILTER_VALIDATE_URL)){
+            echo 'Must enter a valid URL.'
+        }
+    }
+
+    // Check description
+    if(empty($_POST['description'])) {
+        echo "A description is required <br />";
+    } else {
+        $description = $_POST['description'];
+			if(!preg_match('/^[a-zA-Z\s]+$/', $title)){
+				echo 'Description must be letters and spaces only.';
+			}
+    }
+
+    // Check languages
+    if(empty($_POST['languages'])) {
+        echo "At least one language is required <br />";
+    } else {
+        $ingredients = $_POST['languages'];
+		if(!preg_match('/^([a-zA-Z\s]+)(,\s*[a-zA-Z\s]*)*$/', $languages)){
+    		echo 'Languages must be a comma separated list';
+		}
+    }
+} // end of POST check
+
+
 
 ?>
 
