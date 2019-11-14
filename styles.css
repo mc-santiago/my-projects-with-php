@@ -1,0 +1,39 @@
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+.footer {
+    padding: 1em;
+}
+
+.brand {
+    background: #cbb09c !important;
+}
+
+.brand-text {
+    color: #cbb09c !important;
+}
+
+.shadow {
+    text-shadow: 1px 1px grey;
+}
+
+form{
+    max-width: 460px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.flexCenterCenter{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+

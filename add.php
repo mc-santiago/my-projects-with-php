@@ -1,9 +1,9 @@
 <?php
-// POST METHOD.... 
-// htmlspecialchars is a security measure... example: echo htmlspecialchars($_POST['email']);
 
-$email = $title = $image = $description = $languages = '';
-$errors = array('email'=>'', 'title'=>'', 'image'=>'', 'description'=>'', 'languages'=>'');
+include('config/db_connect.php');
+
+$email = $title = $image = $description = $website = $languages = '';
+$errors = array('email'=>'', 'title'=>'', 'image'=>'', 'description'=>'', 'website'=> '', 'languages'=>'');
 
 if(isset($_POST['submit'])) {
 
@@ -22,7 +22,7 @@ if(isset($_POST['submit'])) {
         $errors['title'] = "A title is required <br />";
     } else {
         $title = $_POST['title'];
-		if(!preg_match('/^[a-zA-Z\s]+$/', $title)){
+		if(!preg_match('/^[a-zA-Z\s\.]+$/', $title)){
 			$errors['title'] = 'Title must be letters and spaces only.';
 		}
     }
@@ -42,16 +42,26 @@ if(isset($_POST['submit'])) {
         $errors['description'] = "A description is required <br />";
     } else {
         $description = $_POST['description'];
-			if(!preg_match('/^[a-zA-Z\s]+$/', $title)){
-				$errors['description'] = 'Description must be letters and spaces only.';
+			if(!preg_match('/^[a-zA-Z0-9,.!? ]*$/', $description)){
+				$errors['description'] = 'Description must be letters, spaces, and punctuation only.';
 			}
+    }
+
+    // Check website address 
+    if(empty($_POST['website'])) {
+        $errors['website'] = "A website address is required <br />";
+    } else {
+        $website = $_POST['website'];
+        if(!filter_var($image, FILTER_VALIDATE_URL)){
+            $errors['website'] = 'Must enter a valid URL.';
+        }
     }
 
     // Check languages
     if(empty($_POST['languages'])) {
         $errors['languages'] = "At least one language is required <br />";
     } else {
-        $ingredients = $_POST['languages'];
+        $languages = $_POST['languages'];
 		if(!preg_match('/^([a-zA-Z\s]+)(,\s*[a-zA-Z\s]*)*$/', $languages)){
     		$errors['languages'] = 'Languages must be a comma separated list';
 		}
@@ -59,9 +69,28 @@ if(isset($_POST['submit'])) {
 
     // If no error, form is valid. Redirect to homepage.
     if(array_filter($errors)){
-        echo 'There are errors in the form.';
+        // echo 'There are errors in the form.';
     } else {
-        header('Location: index.php');
+        // make data safe before sending a query to MySQL
+        $email = mysqli_real_escape_string($conn, $_POST['email']);
+        $title = mysqli_real_escape_string($conn, $_POST['title']);
+        $image = mysqli_real_escape_string($conn, $_POST['image']);
+        $description = mysqli_real_escape_string($conn, $_POST['description']);
+        $website = mysqli_real_escape_string($conn, $_POST['website']);
+        $languages = mysqli_real_escape_string($conn, $_POST['languages']);
+
+        // create sql
+        $sql = "INSERT INTO projects(title,image,description,languages,email,website) VALUES('$title', '$image', '$description', '$languages', '$email', '$website')";
+
+        // save to db and check
+        if(mysqli_query($conn, $sql)){
+            //success
+            header('Location: index.php');
+        } else {
+            // error
+            echo 'query error: ' . mysqli_error($conn);
+        } 
+
     }
 
 } // end of POST check
@@ -75,12 +104,12 @@ if(isset($_POST['submit'])) {
 
     <?php include('templates/header.php') ?>
 
-    <section class="container grey-text">
-        <h4 class="center">Add a New Project</h4>
+    <main class="container brand-text">
+        <h4 class="center shadow"><b>Add a New Project</b></h4>
         <form action="add.php" method="POST" class="white">
             <!-- Email -->
             <label>Email: </label>
-            <div class="red-text">
+                <div class="red-text">
                     <?php echo $errors['email']; ?>
                 </div>
             <input type="text" name="email" value="<?php echo htmlspecialchars($email) ?>">
@@ -102,6 +131,12 @@ if(isset($_POST['submit'])) {
                     <?php echo $errors['description']; ?>
                 </div>
             <input type="text" name="description" value="<?php echo htmlspecialchars($description) ?>">
+            <!-- Website -->
+            <label>Website: </label>
+                <div class="red-text">
+                    <?php echo $errors['website']; ?>
+                </div>
+            <input type="text" name="website" value="<?php echo htmlspecialchars($website) ?>">
             <!-- Languages used -->    
             <label>Launguages used (comma separated): </label>
                 <div class="red-text">
@@ -110,10 +145,10 @@ if(isset($_POST['submit'])) {
             <input type="text" name="languages" value="<?php echo htmlspecialchars($languages) ?>">
                 
             <div class="center">
-                <input type="submit" name="submit" value="submit" class="btn brand z-depth-0">
+                <input type="submit" name="submit" value="submit" class="btn brand">
             </div>
         </form>
-    </section>
+    </main>
 
     <?php include('templates/footer.php') ?>
 
